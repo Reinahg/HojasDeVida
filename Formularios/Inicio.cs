@@ -32,8 +32,8 @@ namespace HojasDeVida.Formularios
         private void NewHoja_Click(object sender, EventArgs e)
         {
             this.Hide();
-            HojaVida hoja = new HojaVida(true);//0 para crear, 1 para leer
-            
+            HojaVida hoja = new HojaVida(false, "");
+
             hoja.Show();
         }
 
@@ -61,7 +61,7 @@ namespace HojasDeVida.Formularios
                 string years = row["AnosExp"].ToString();
 
 
-                dtHojasVida.Rows.Add(new object[] { cedula,nombre,edad,profesion,years });
+                dtHojasVida.Rows.Add(new object[] { cedula, nombre, edad, profesion, years });
             }
 
             tableData.DataSource = dtHojasVida;
@@ -78,7 +78,7 @@ namespace HojasDeVida.Formularios
 
         private void searchYearsOld_Click(object sender, EventArgs e)
         {
-            
+
             DataView dv = dtHojasVida.DefaultView;
             dv.RowFilter = "Edad LIKE '" + tfYears.Text + "%'";
             tableData.DataSource = dv;
@@ -121,6 +121,17 @@ namespace HojasDeVida.Formularios
             tfYears.Text = "";
         }
 
-        
+        private void tableData_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = this.tableData.Rows[e.RowIndex];
+                String cedula = row.Cells["Cedula"].Value.ToString();
+                this.Hide();
+                HojaVida hoja = new HojaVida(true, cedula);
+
+                hoja.Show();
+            }
+        }
     }
 }

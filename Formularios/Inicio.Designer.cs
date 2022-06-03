@@ -71,6 +71,7 @@
             this.tableData.RowTemplate.Height = 29;
             this.tableData.Size = new System.Drawing.Size(726, 388);
             this.tableData.TabIndex = 1;
+            this.tableData.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.tableData_CellContentDoubleClick);
             // 
             // searchName
             // 

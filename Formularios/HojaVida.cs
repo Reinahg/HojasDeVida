@@ -20,18 +20,26 @@ namespace HojasDeVida.Formularios
         SqlDataAdapter da;
         DataTable dt;
         Boolean isForRead;
+        String cedulaRead;
 
-        public HojaVida(Boolean isForRead)//0 para crear, 1 para leer
+        public HojaVida(Boolean isForRead, String cedula)
         {
             InitializeComponent();
             cn = new cConexion();
             this.isForRead = isForRead;
+
+            this.cedulaRead = cedula;
+
+            updateForm();
         }
 
         private void updateForm()
         {
             if (this.isForRead)
             {
+                getData();
+                lblTitle.Text = "Hoja de vida";
+
                 tfCedula.Enabled = false;
                 tfNombre.Enabled = false;
                 tfProfesion.Enabled = false;
@@ -43,10 +51,10 @@ namespace HojasDeVida.Formularios
                 tfYears.Enabled = false;
                 tfNit.Enabled = false;
 
-                btnContinue.Enabled = false;
             }
             else
             {
+                lblTitle.Text = "Nueva hoja de vida";
                 tfCedula.Enabled = true;
                 tfNombre.Enabled = true;
                 tfProfesion.Enabled = true;
@@ -58,18 +66,48 @@ namespace HojasDeVida.Formularios
                 tfYears.Enabled = true;
                 tfNit.Enabled = true;
 
-                btnContinue.Enabled = false;
             }
+        }
+
+        private void getData()
+        {
+
+            cmd = new SqlCommand("select HojaDeVida.Cedula, HojaDeVida.Nombre, HojaDeVida.Profesion, HojaDeVida.Edad, HojaDeVida.Escolaridad, Experiencia.Jefe, Experiencia.Contacto, Experiencia.Cargo, Experiencia.AnosExp, Experiencia.NitEmpresa from HojaDeVida inner join Experiencia on HojaDeVida.Experiencia = Experiencia.IdExperiencia where HojaDeVida.Cedula = " + cedulaRead, cn.AbrirConexion());
+            da = new SqlDataAdapter(cmd);
+            dt = new DataTable();
+            da.Fill(dt);
+            llenar(dt);
+        }
+
+        void llenar(DataTable dt)
+        {
+            tfCedula.Text = dt.Rows[0][0].ToString(); 
+            tfNombre.Text = dt.Rows[0][1].ToString();
+            tfProfesion.Text = dt.Rows[0][2].ToString();
+            tfEdad.Text = dt.Rows[0][3].ToString();
+            tfEscolaridad.Text = dt.Rows[0][4].ToString();
+            tfJefeAnterior.Text = dt.Rows[0][5].ToString();
+            tfContactoJefe.Text = dt.Rows[0][6].ToString();
+            tfCargoAnterior.Text = dt.Rows[0][7].ToString();
+            tfYears.Text = dt.Rows[0][8].ToString();
+            tfNit.Text = dt.Rows[0][9].ToString();
         }
 
         private void Create_Click(object sender, EventArgs e)
         {
-            if (checkFields())
+            if (isForRead)
             {
-                insertUser();
+                goToInicio();
             } else
             {
-                MessageBox.Show("Por favor ingresa todos los campos");
+                if (checkFields())
+                {
+                    insertUser();
+                }
+                else
+                {
+                    MessageBox.Show("Por favor ingresa todos los campos");
+                }
             }
         }
 
